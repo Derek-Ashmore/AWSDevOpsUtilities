@@ -2,7 +2,7 @@
 
 This set of AWS lambdas is targeted at managing and securing your AWS assets.
 
-##Planned Utilities
+## Planned Utilities
 * Cost Control
     * Automated Instance StartUp / Shutdown
     * Automated creation notifications
