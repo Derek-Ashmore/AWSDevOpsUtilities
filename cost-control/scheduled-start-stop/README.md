@@ -8,6 +8,7 @@ are unreliable.
 
 ## Configuration
 **Global Start/Stop schedule is recorded by environment variable settings.** 
+
 | Environment Variable Name | Value Required | Value Syntax |
 | --- |:---:| ---:|
 | Scheduled-StartTime | N | HH:MM - Hours are in 24-hour format (e.g 2pm is 14:00). All time is UTC. |
@@ -16,6 +17,7 @@ are unreliable.
 | Scheduled-TimeZone | N | UTC assumed. |
 
 **Individual Start/Stop schedule is recorded by instance tags.** 
+
 | Tag Name | Tag Required | Tag Value Syntax |
 | --- |:---:| ---:|
 | Scheduled-StartTime | Y | HH:MM - Hours are in 24-hour format (e.g 2pm is 14:00). All time is UTC. |
