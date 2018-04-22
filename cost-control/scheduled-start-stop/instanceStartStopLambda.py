@@ -31,6 +31,7 @@ def startStopHandler(event, context):
 def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, globalDaySpec):
     instances=findAllEc2Instances()
     
+    # Global start
     if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
         for instance in instances:
             if 'Scheduled-StartTime' not in instance['tagDict'] and instance['state'] == 'stopped':
@@ -38,9 +39,29 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
                 
+    # Global stop
     if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
         for instance in instances:
             if 'Scheduled-StopTime' not in instance['tagDict'] and instance['state'] == 'running':
+                print ('Stopping instance id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
+                stopEc2Instance(instance['instanceId'])
+                
+    # Instance-level starts/stops
+    for instance in instances:
+        startStopDays = 'M,T,W,R,F'
+        if 'Scheduled-StartTime' in instance['tagDict'] and instance['state'] == 'stopped':            
+            if 'Scheduled-StartStop-Days' in instance['tagDict']:
+                startStopDays = instance['tagDict']['Scheduled-StartStop-Days']
+            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled-StartTime'] , startStopDays):              
+                print ('Starting instance id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
+                startEc2Instance(instance['instanceId'])
+                
+        if 'Scheduled-StopTime' not in instance['tagDict'] and instance['state'] == 'running':
+            if 'Scheduled-StartStop-Days' in instance['tagDict']:
+                startStopDays = instance['tagDict']['Scheduled-StartStop-Days']
+            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled-StopTime'] , startStopDays):              
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 stopEc2Instance(instance['instanceId'])
