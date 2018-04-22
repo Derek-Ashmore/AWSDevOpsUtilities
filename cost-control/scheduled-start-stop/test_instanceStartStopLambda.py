@@ -39,5 +39,9 @@ def test_datetimeMatches():
     
 def test_findAllEc2Instances(): 
     instanceList = instanceStartStopLambda.findAllEc2Instances()
-    print("instanceList = {}").format(instanceList[0])
-    assert False
+    #print("instanceList = {}").format(instanceList[0])
+    assert len(instanceList) > 0
+    
+def test_executeStopStart(): 
+    instanceStartStopLambda.setTestMode()
+    instanceStartStopLambda.executeStopStart(currentDateTime, '22:00', '22:00', 'M,T,W,R,F,U')

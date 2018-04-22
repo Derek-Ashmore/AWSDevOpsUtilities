@@ -14,10 +14,11 @@ import os
 import datetime
 import boto3
 
+testMode = False
+
 def startStopHandler(event, context): 
     try:
-        executeStopStart(event, context
-                         , datetime.now(os.getenv('Scheduled-TimeZone', 'UTC'))
+        executeStopStart(datetime.now(os.getenv('Scheduled-TimeZone', 'UTC'))
                          , os.getenv('Scheduled-StartTime', '')
                          , os.getenv('Scheduled-StopTime', '')
                          , os.getenv('Scheduled-StartStop-Days', 'M,T,W,R,F'))
@@ -27,20 +28,65 @@ def startStopHandler(event, context):
         
     return 0;
 
-def executeStopStart(event, context, currentDateTime, globalStartTimeSpec, globalEndTimeSpec, globalDaySpec):
-    print ("to do")
+def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, globalDaySpec):
+    instances=findAllEc2Instances()
     
-def globalStartItUp():
-    print ("to do")
-    
-def globalShutitDown():
-    print ("to do")
+    if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
+        for instance in instances:
+            if 'Scheduled-StartTime' not in instance['tagDict'] and instance['state'] == 'stopped':
+                print ('Starting instance id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
+                startEc2Instance(instance['instanceId'])
+                
+    if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
+        for instance in instances:
+            if 'Scheduled-StopTime' not in instance['tagDict'] and instance['state'] == 'running':
+                print ('Stopping instance id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
+                stopEc2Instance(instance['instanceId'])
     
 def findAllEc2Instances():
     ec2Client = boto3.client('ec2')
     instanceList = ec2Client.describe_instances();
-    return instanceList['Reservations']
     
+    instances=[]
+    for item in instanceList['Reservations']:
+        instance={}
+        instance['instanceId'] = item['Instances'][0]['InstanceId']
+        instance['tagDict'] = tags2dict(item['Instances'][0]['Tags'])
+        instance['state'] = item['Instances'][0]['State']['Name']
+        instances.append(instance)
+        
+    return instances
+
+def startEc2Instance(instanceId):
+    ec2Client = boto3.client('ec2')
+    try:
+        ec2Client.start_instances(
+            InstanceIds=[instanceId],
+            DryRun=testMode
+            )
+    except Exception as e:
+        if testMode:
+            print ('Instance {} would have started').format(instanceId)
+
+def stopEc2Instance(instanceId):
+    ec2Client = boto3.client('ec2')
+    try:
+        ec2Client.stop_instances(
+            InstanceIds=[instanceId],
+            DryRun=testMode
+            )
+    except Exception as e:
+        if testMode:
+            print ('Instance {} would have stopped').format(instanceId)
+            
+def tags2dict(tags):
+    tagDict = {}
+    for tag in tags:
+        tagDict[tag['Key']] = tag['Value']
+    return tagDict
+
 def datetimeMatches(currentDateTime, timeSpec, daySpec):
     return matchesDaySpec(currentDateTime, daySpec) and matchesTimeSpec(currentDateTime, timeSpec)
   
@@ -57,6 +103,10 @@ def matchesDaySpec(currentDateTime,daySpec):
         return True
     return False
 
+def setTestMode():
+    global testMode
+    testMode = True
+    
 def int2Weekday(weekdayInt):
     return weekdayIntStringDict[weekdayInt]
 
@@ -68,3 +118,4 @@ weekdayIntStringDict = {0 : 'M',
            5 : 'S',
            6 : 'U'
            }
+
