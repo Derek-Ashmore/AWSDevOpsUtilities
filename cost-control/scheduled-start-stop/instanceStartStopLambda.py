@@ -40,7 +40,7 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
                 startEc2Instance(instance['instanceId'])
                 
     # Global stop
-    if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
+    if datetimeMatches(currentDateTime, globalEndTimeSpec, globalDaySpec):
         for instance in instances:
             if 'Scheduled_StopTime' not in instance['tagDict'] and instance['state'] == 'running':
                 print ('Stopping instance id={} name={} state={}').format(
