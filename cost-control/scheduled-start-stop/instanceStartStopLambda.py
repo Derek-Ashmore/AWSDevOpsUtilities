@@ -32,15 +32,13 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
     instances=findAllEc2Instances()
     
     # Global start
-    if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
+    if datetimeMatches(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, globalDaySpec):
         for instance in instances:
             if 'Scheduled_StartTime' not in instance['tagDict'] and instance['state'] == 'stopped':
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
-                
-    # Global stop
-    if datetimeMatches(currentDateTime, globalEndTimeSpec, globalDaySpec):
+    else:
         for instance in instances:
             if 'Scheduled_StopTime' not in instance['tagDict'] and instance['state'] == 'running':
                 print ('Stopping instance id={} name={} state={}').format(
@@ -108,19 +106,34 @@ def tags2dict(tags):
         tagDict[tag['Key']] = tag['Value']
     return tagDict
 
-def datetimeMatches(currentDateTime, timeSpec, daySpec):
-    return matchesDaySpec(currentDateTime, daySpec) and matchesTimeSpec(currentDateTime, timeSpec)
+def datetimeMatches(currentDateTime, startTimeSpec, endTimeSpec, daySpec):
+    return matchesDaySpec(currentDateTime, daySpec) and isRunningTime(currentDateTime, startTimeSpec, endTimeSpec)
   
-def matchesTimeSpec(currentDateTime,timeSpec):
-    timeSpecSplit = timeSpec.replace(' ','').split(':')
-    if currentDateTime.hour == int(timeSpecSplit[0]) and currentDateTime.minute == int(timeSpecSplit[1]):
-        return True
-    return False
-      
 def matchesDaySpec(currentDateTime,daySpec):
     currentWeekDay = int2Weekday(currentDateTime.date().weekday())
     daySpecSplit = daySpec.replace(' ','').split(',')
     if currentWeekDay in daySpecSplit:
+        return True
+    return False
+
+def getMinute(timeSpec):
+    timeSpecSplit = timeSpec.replace(' ','').split(':')
+    return int(timeSpecSplit[1])
+
+def getHour(timeSpec):
+    timeSpecSplit = timeSpec.replace(' ','').split(':')
+    return int(timeSpecSplit[0])
+
+def isRunningTime(currentDateTime, startTimeSpec, endTimeSpec):
+    startHour = getHour(startTimeSpec)
+    endHour = getHour(endTimeSpec)
+    startMinute = getMinute(startTimeSpec)
+    endMinute = getMinute(endTimeSpec)
+    if currentDateTime.hour > startHour and currentDateTime.hour < endHour:
+        return True
+    if currentDateTime.hour == startHour and currentDateTime.minute >= startMinute:
+        return True
+    if currentDateTime.hour == endHour and currentDateTime.minute <= endMinute:
         return True
     return False
 

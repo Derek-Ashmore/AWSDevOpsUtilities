@@ -26,16 +26,11 @@ def test_matchesDaySpec():
     assert instanceStartStopLambda.matchesDaySpec(currentDateTime, 'M,T,W,R,F,U')
     assert instanceStartStopLambda.matchesDaySpec(currentDateTime, 'M,U ,T,W,R,F')
     
-def test_matchesTimeSpec(): 
-    assert not instanceStartStopLambda.matchesTimeSpec(currentDateTime, '22:05')
-    assert not instanceStartStopLambda.matchesTimeSpec(currentDateTime, '21:00')
-    assert instanceStartStopLambda.matchesTimeSpec(currentDateTime, '22:00')
-    
 def test_datetimeMatches(): 
-    assert not instanceStartStopLambda.datetimeMatches(currentDateTime, '22:05', 'M,T,W,R,F')
-    assert not instanceStartStopLambda.datetimeMatches(currentDateTime, '22:00', 'M,T,W,R,F')
-    assert not instanceStartStopLambda.datetimeMatches(currentDateTime, '22:05', 'M,T,W,R,F,U')
-    assert instanceStartStopLambda.datetimeMatches(currentDateTime, '22:00', 'M,T,W,R,F,U')
+    assert not instanceStartStopLambda.datetimeMatches(currentDateTime, '22:05', '23:05', 'M,T,W,R,F')
+    assert not instanceStartStopLambda.datetimeMatches(currentDateTime, '22:00', '23:05', 'M,T,W,R,F')
+    assert not instanceStartStopLambda.datetimeMatches(currentDateTime, '22:05', '23:05', 'M,T,W,R,F,U')
+    assert instanceStartStopLambda.datetimeMatches(currentDateTime, '21:00', '23:00', 'M,T,W,R,F,U')
     
 def test_findAllEc2Instances(): 
     instanceList = instanceStartStopLambda.findAllEc2Instances()
@@ -45,3 +40,14 @@ def test_findAllEc2Instances():
 def test_executeStopStart(): 
     instanceStartStopLambda.setTestMode()
     instanceStartStopLambda.executeStopStart(currentDateTime, '22:00', '22:00', 'M,T,W,R,F,U')
+    
+def test_getMinute(): 
+    assert instanceStartStopLambda.getMinute('14:23') == 23
+    
+def test_getHour(): 
+    assert instanceStartStopLambda.getHour('14:23') == 14
+    
+def test_isRunningTime(): 
+    assert instanceStartStopLambda.isRunningTime(currentDateTime, '21:59', '22:01')
+    assert not instanceStartStopLambda.isRunningTime(currentDateTime, '20:59', '21:01')
+    assert not instanceStartStopLambda.isRunningTime(currentDateTime, '22:59', '23:01')
