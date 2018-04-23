@@ -11,21 +11,23 @@ are unreliable.
 
 | Environment Variable Name | Value Required | Value Syntax |
 | --- |:---:| ---:|
-| Scheduled-StartTime | N | HH:MM - Hours are in 24-hour format (e.g 2pm is 14:00). All time is UTC. |
-| Scheduled-StopTime | N | HH:MM - Hours are in 24-hour format (e.g 4pm is 16:00). All time is UTC. |
-| Scheduled-StartStop-Days | N | M,T,W,R,F assumed. First letter of the day except that R=Thursday and U=Sunday. Days are comma-delimited. |
-| Scheduled-TimeZone | N | UTC assumed. |
+| Scheduled_StartTime | N | HH:MM - Hours are in 24-hour format (e.g 2pm is 14:00). All time is UTC. |
+| Scheduled_StopTime | N | HH:MM - Hours are in 24-hour format (e.g 4pm is 16:00). All time is UTC. |
+| Scheduled_StartStop_Days | N | M,T,W,R,F assumed. First letter of the day except that R=Thursday and U=Sunday. Days are comma-delimited. |
 
 **Individual Start/Stop schedule is recorded by instance tags.** 
 
 | Tag Name | Tag Required | Tag Value Syntax |
 | --- |:---:| ---:|
-| Scheduled-StartTime | Y | HH:MM - Hours are in 24-hour format (e.g 2pm is 14:00). All time is UTC. |
-| Scheduled-StopTime | Y | HH:MM - Hours are in 24-hour format (e.g 4pm is 16:00). All time is UTC. |
-| Scheduled-StartStop-Days | N | M,T,W,R,F assumed. First letter of the day except that R=Thursday and U=Sunday. Days are comma-delimited. |
+| Scheduled_StartTime | Y | HH:MM - Hours are in 24-hour format (e.g 2pm is 14:00). All time is UTC. |
+| Scheduled_StopTime | Y | HH:MM - Hours are in 24-hour format (e.g 4pm is 16:00). All time is UTC. |
+| Scheduled_StartStop_Days | N | M,T,W,R,F assumed. First letter of the day except that R=Thursday and U=Sunday. Days are comma-delimited. |
 
 This lambda will examine all instances within the account and act according to tags. A separate tag enforcement lambda is planned
 that will provide notifications for instances with specified tags.
 
 This lambda should be scheduled every minute.
+
+## Future Plans
+* Add ability to specify the time zone used.
 

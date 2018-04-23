@@ -18,10 +18,10 @@ testMode = False
 
 def startStopHandler(event, context): 
     try:
-        executeStopStart(datetime.now(os.getenv('Scheduled-TimeZone', 'UTC'))
-                         , os.getenv('Scheduled-StartTime', '')
-                         , os.getenv('Scheduled-StopTime', '')
-                         , os.getenv('Scheduled-StartStop-Days', 'M,T,W,R,F'))
+        executeStopStart(datetime.datetime.now()
+                         , os.getenv('Scheduled_StartTime', '')
+                         , os.getenv('Scheduled_StopTime', '')
+                         , os.getenv('Scheduled_StartStop-Days', 'M,T,W,R,F'))
     except Exception as e:
         e.args += (event,vars(context))
         raise
@@ -34,7 +34,7 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
     # Global start
     if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
         for instance in instances:
-            if 'Scheduled-StartTime' not in instance['tagDict'] and instance['state'] == 'stopped':
+            if 'Scheduled_StartTime' not in instance['tagDict'] and instance['state'] == 'stopped':
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
@@ -42,7 +42,7 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
     # Global stop
     if datetimeMatches(currentDateTime, globalStartTimeSpec, globalDaySpec):
         for instance in instances:
-            if 'Scheduled-StopTime' not in instance['tagDict'] and instance['state'] == 'running':
+            if 'Scheduled_StopTime' not in instance['tagDict'] and instance['state'] == 'running':
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 stopEc2Instance(instance['instanceId'])
@@ -50,17 +50,17 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
     # Instance-level starts/stops
     for instance in instances:
         startStopDays = 'M,T,W,R,F'
-        if 'Scheduled-StartTime' in instance['tagDict'] and instance['state'] == 'stopped':            
-            if 'Scheduled-StartStop-Days' in instance['tagDict']:
-                startStopDays = instance['tagDict']['Scheduled-StartStop-Days']
-            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled-StartTime'] , startStopDays):              
+        if 'Scheduled_StartTime' in instance['tagDict'] and instance['state'] == 'stopped':            
+            if 'Scheduled-StartStop_Days' in instance['tagDict']:
+                startStopDays = instance['tagDict']['Scheduled_StartStop-Days']
+            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'] , startStopDays):              
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
                 
-        if 'Scheduled-StopTime' not in instance['tagDict'] and instance['state'] == 'running':
-            if 'Scheduled-StartStop-Days' in instance['tagDict']:
-                startStopDays = instance['tagDict']['Scheduled-StartStop-Days']
+        if 'Scheduled_StopTime' not in instance['tagDict'] and instance['state'] == 'running':
+            if 'Scheduled_StartStop_Days' in instance['tagDict']:
+                startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
             if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled-StopTime'] , startStopDays):              
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
