@@ -21,7 +21,7 @@ def startStopHandler(event, context):
         executeStopStart(datetime.datetime.now()
                          , os.getenv('Scheduled_StartTime', '')
                          , os.getenv('Scheduled_StopTime', '')
-                         , os.getenv('Scheduled_StartStop-Days', 'M,T,W,R,F'))
+                         , os.getenv('Scheduled_StartStop_Days', 'M,T,W,R,F'))
     except Exception as e:
         e.args += (event,vars(context))
         raise
@@ -51,17 +51,17 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
     for instance in instances:
         startStopDays = 'M,T,W,R,F'
         if 'Scheduled_StartTime' in instance['tagDict'] and instance['state'] == 'stopped':            
-            if 'Scheduled-StartStop_Days' in instance['tagDict']:
-                startStopDays = instance['tagDict']['Scheduled_StartStop-Days']
+            if 'Scheduled_StartStop_Days' in instance['tagDict']:
+                startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
             if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'] , startStopDays):              
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
                 
-        if 'Scheduled_StopTime' not in instance['tagDict'] and instance['state'] == 'running':
+        if 'Scheduled_StopTime' in instance['tagDict'] and instance['state'] == 'running':
             if 'Scheduled_StartStop_Days' in instance['tagDict']:
                 startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
-            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled-StopTime'] , startStopDays):              
+            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StopTime'] , startStopDays):              
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 stopEc2Instance(instance['instanceId'])
