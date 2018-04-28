@@ -1,5 +1,5 @@
 """
-tagEnforcer.py
+tagEnforcerLambda.py
 
 This AWS Lambda enforces a schedule for enforcing items have required tags for AWS cost allocation.
 
