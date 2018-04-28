@@ -34,6 +34,20 @@ def tagEnforcement(tags, snsArn):
     
     for violation in violationList:
         print (violation)
+        
+    sendSnsNotification(snsArn)
+  
+def sendSnsNotification(snsArn):  
+    snsClient = boto3.client('sns')
+    
+    myMessage = ''
+    for violation in violationList:
+        myMessage += 'missingTag={}, type={}, name={}, id={} \n '.format(
+            violation['missingTag'], violation['itemType'], violation['itemName'], violation['itemId'])
+
+    snsClient.publish(TargetArn=snsArn
+                      , Subject='Tag Violation List'
+                      , Message=myMessage)
     
 def checkEC2Instances(tags):
     ec2Client = boto3.client('ec2')

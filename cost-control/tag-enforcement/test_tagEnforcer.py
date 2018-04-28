@@ -21,6 +21,5 @@ def test_checkTags():
     
 def test_tagEnforcement():
     tagEnforcerLambda.violationList = []
-    tagEnforcerLambda.tagEnforcement(tags, '')
+    tagEnforcerLambda.tagEnforcement(tags, 'arn:aws:sns:us-east-1:517214143524:NotificationTesting')
     assert len(tagEnforcerLambda.violationList) > 0
-    print (tagEnforcerLambda.violationList)
