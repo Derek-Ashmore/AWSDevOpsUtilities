@@ -42,4 +42,5 @@ This lambda should be scheduled every minute.
 
 ## Future Plans
 * Add ability to specify the time zone used.
+* Extend functionality to RDS instances.
 
