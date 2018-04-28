@@ -17,7 +17,7 @@ violationList=[]
 
 def tagEnforcementHandler(event, context): 
     try:
-        tagEnforcement(os.getenv('Required_Tags', '')
+        tagEnforcement(os.getenv('Required_Tags', '').split(',')
                          , os.getenv('Tag_Notification_SNS_ARN', ''))
     except Exception as e:
         e.args += (event,vars(context))
