@@ -38,12 +38,18 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
+            else:
+                print ('Instance not eligible for global start: id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
     else:
         for instance in instances:
             if 'Scheduled_StopTime' not in instance['tagDict'] and instance['state'] == 'running':
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 stopEc2Instance(instance['instanceId'])
+            else:
+                print ('Instance not eligible for global stop: id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 
     # Instance-level starts/stops
     for instance in instances:
@@ -51,18 +57,24 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
         if 'Scheduled_StartTime' in instance['tagDict'] and instance['state'] == 'stopped':            
             if 'Scheduled_StartStop_Days' in instance['tagDict']:
                 startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
-            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'] , startStopDays):              
+            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'] , instance['tagDict']['Scheduled_StopTime'], startStopDays):              
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
+            else:
+                print ('Instance not eligible for start: id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 
         if 'Scheduled_StopTime' in instance['tagDict'] and instance['state'] == 'running':
             if 'Scheduled_StartStop_Days' in instance['tagDict']:
                 startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
-            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StopTime'] , startStopDays):              
+            if not datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'], instance['tagDict']['Scheduled_StopTime'] , startStopDays):              
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 stopEc2Instance(instance['instanceId'])
+            else:
+                print ('Instance not eligible for stop: id={} name={} state={}').format(
+                    instance['instanceId'], instance['tagDict']['Name'], instance['state'])
     
 def findAllEc2Instances():
     ec2Client = boto3.client('ec2')

@@ -6,6 +6,18 @@ Non-production environments where instances are not needed 24x7x365. Usually, de
 "remember" to shut down instances at the end of the day to save costs; manual methods like that 
 are unreliable.
 
+## Installation
+
+* Create a role for the lambda containing the privileges in this [policy](awsPolicy.json). 
+* Create this lambda from the console.
+    * Platform = Python 2.7
+    * Copy/paste source code:  [instanceStartStopLambda.py](instanceStartStopLambda.py)
+    * Handler method:  lambda_function.startStopHandler
+* If you plan to use a global schedule (recommended), set environment variables listed in the configuration sectioon
+* Schedule the lambda using a cron expression (e.g. every minute, five minutes, etc.)
+
+Note:  You may need to adjust the timeout from the default if you've many instances to manage.
+
 ## Configuration
 **Global Start/Stop schedule is recorded by environment variable settings.** 
 
