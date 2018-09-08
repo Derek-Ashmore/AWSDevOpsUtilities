@@ -16,4 +16,5 @@ This set of AWS lambdas is targeted at managing and securing your AWS assets.
     * Python Lambda Packager
     * [Capture Trigger Json](productivity/event-capture/README.md)
     * [Cloud Trail Tee](productivity/cloud-trail-tee/README.md)
-    
+* Samples
+    * [Sample Cross-Account Lambda](samples/cross-account/README.md)
