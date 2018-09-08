@@ -14,5 +14,6 @@ This set of AWS lambdas is targeted at managing and securing your AWS assets.
     * Automated user creation notifications
 * Productivity
     * Python Lambda Packager
-    * Capture Trigger Json
+    * [Capture Trigger Json](productivity/event-capture/README.md)
+    * [Cloud Trail Tee](productivity/cloud-trail-tee/README.md)
     
