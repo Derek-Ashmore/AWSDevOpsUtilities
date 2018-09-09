@@ -3,11 +3,11 @@ crossAccount.py
 
 This AWS Lambda illustrates how one Lambda installation can service accounts across the organization.
 
-Required Argument fields:
-    --  Assumed_Role - ARN of role to assume
-
 Environment Settings:
     --  None
+
+Required Argument fields:
+    --  Assumed_Role - ARN of role to assume
 
 Git Repo source:    https://github.com/Derek-Ashmore/AWSDevOpsUtilities/blob/master/samples/cross-account/crossAccount.py
 """
