@@ -35,6 +35,8 @@ def secretHandler(event, context):
 
 def decryptSecret(keyId, secretEncrypted):
     binary_secret = base64.b64decode(secretEncrypted)
-    meta = kms.decrypt(CiphertextBlob=binary_secret)
+
+    kmsClient = boto3.client('kms')
+    meta = kmsClient.decrypt(CiphertextBlob=binary_secret)
     plaintext = meta[u'Plaintext']
     return plaintext.decode()

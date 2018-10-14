@@ -3,7 +3,7 @@ secretEncrypt.py
 
 Will encrypt a secret using KMS and byte64 encode it.
 
-Usage:  python secretEncrypt.py --r ec2 --s instances
+Usage:  python secretEncrypt.py --s "Hello World!" --k 6c68f1ed-c51b-4691-be8c-7233d221b1b6
 
 Options:    --s         Secret to be encrypted.
 
@@ -12,6 +12,7 @@ Options:    --s         Secret to be encrypted.
 import sys
 import os
 import click
+import base64
 import boto3
 
 @click.command()
