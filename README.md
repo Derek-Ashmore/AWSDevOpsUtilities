@@ -19,3 +19,5 @@ Listings with active links exist.
     * [Lambda Execution Controller](productivity/lambda-controller/README.md)
 * Samples
     * [Sample Cross-Account Lambda](samples/cross-account/README.md)
+    * [Sample Kms Secret Lambda](samples/kms-secrets/README.md)
+    * [Sample Secrets Manager Lambda](samples/secrets-manager/README.md)
