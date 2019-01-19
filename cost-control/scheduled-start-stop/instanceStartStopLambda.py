@@ -4,7 +4,9 @@ instanceStartStopLambda.py
 This AWS Lambda enforces a schedule for starting and stopping instances for AWS cost savings.
 
 Environment Settings:
-    --    
+    --
+
+Source Control: https://github.com/Derek-Ashmore/AWSDevOpsUtilities
 
 """
 
@@ -16,7 +18,7 @@ import boto3
 
 testMode = False
 
-def startStopHandler(event, context): 
+def startStopHandler(event, context):
     try:
         executeStopStart(datetime.datetime.now()
                          , os.getenv('Scheduled_StartTime', '')
@@ -25,12 +27,12 @@ def startStopHandler(event, context):
     except Exception as e:
         e.args += (event,vars(context))
         raise
-        
+
     return 0;
 
 def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, globalDaySpec):
     instances=findAllEc2Instances()
-    
+
     # Global start
     if datetimeMatches(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, globalDaySpec):
         for instance in instances:
@@ -50,36 +52,36 @@ def executeStopStart(currentDateTime, globalStartTimeSpec, globalEndTimeSpec, gl
             else:
                 print ('Instance not eligible for global stop: id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
-                
+
     # Instance-level starts/stops
     for instance in instances:
         startStopDays = 'M,T,W,R,F'
-        if 'Scheduled_StartTime' in instance['tagDict'] and instance['state'] == 'stopped':            
+        if 'Scheduled_StartTime' in instance['tagDict'] and instance['state'] == 'stopped':
             if 'Scheduled_StartStop_Days' in instance['tagDict']:
                 startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
-            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'] , instance['tagDict']['Scheduled_StopTime'], startStopDays):              
+            if datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'] , instance['tagDict']['Scheduled_StopTime'], startStopDays):
                 print ('Starting instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 startEc2Instance(instance['instanceId'])
             else:
                 print ('Instance not eligible for start: id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
-                
+
         if 'Scheduled_StopTime' in instance['tagDict'] and instance['state'] == 'running':
             if 'Scheduled_StartStop_Days' in instance['tagDict']:
                 startStopDays = instance['tagDict']['Scheduled_StartStop_Days']
-            if not datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'], instance['tagDict']['Scheduled_StopTime'] , startStopDays):              
+            if not datetimeMatches(currentDateTime, instance['tagDict']['Scheduled_StartTime'], instance['tagDict']['Scheduled_StopTime'] , startStopDays):
                 print ('Stopping instance id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
                 stopEc2Instance(instance['instanceId'])
             else:
                 print ('Instance not eligible for stop: id={} name={} state={}').format(
                     instance['instanceId'], instance['tagDict']['Name'], instance['state'])
-    
+
 def findAllEc2Instances():
     ec2Client = boto3.client('ec2')
     instanceList = ec2Client.describe_instances();
-    
+
     instances=[]
     for item in instanceList['Reservations']:
         instance={}
@@ -87,7 +89,7 @@ def findAllEc2Instances():
         instance['tagDict'] = tags2dict(item['Instances'][0]['Tags'])
         instance['state'] = item['Instances'][0]['State']['Name']
         instances.append(instance)
-        
+
     return instances
 
 def startEc2Instance(instanceId):
@@ -111,7 +113,7 @@ def stopEc2Instance(instanceId):
     except Exception as e:
         if testMode:
             print ('Instance {} would have stopped').format(instanceId)
-            
+
 def tags2dict(tags):
     tagDict = {}
     for tag in tags:
@@ -120,7 +122,7 @@ def tags2dict(tags):
 
 def datetimeMatches(currentDateTime, startTimeSpec, endTimeSpec, daySpec):
     return matchesDaySpec(currentDateTime, daySpec) and isRunningTime(currentDateTime, startTimeSpec, endTimeSpec)
-  
+
 def matchesDaySpec(currentDateTime,daySpec):
     currentWeekDay = int2Weekday(currentDateTime.date().weekday())
     daySpecSplit = daySpec.replace(' ','').split(',')
@@ -152,7 +154,7 @@ def isRunningTime(currentDateTime, startTimeSpec, endTimeSpec):
 def setTestMode():
     global testMode
     testMode = True
-    
+
 def int2Weekday(weekdayInt):
     return weekdayIntStringDict[weekdayInt]
 
@@ -164,4 +166,3 @@ weekdayIntStringDict = {0 : 'M',
            5 : 'S',
            6 : 'U'
            }
-

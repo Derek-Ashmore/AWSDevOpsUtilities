@@ -12,7 +12,7 @@ Environment Settings:
 Required Argument fields:
     --  None
 
-Git Repo source:    https://github.com/Derek-Ashmore/AWSDevOpsUtilities/blob/master/productivity/lambda-controller/lambdaController.py
+Source Control: https://github.com/Derek-Ashmore/AWSDevOpsUtilities
 """
 
 import sys

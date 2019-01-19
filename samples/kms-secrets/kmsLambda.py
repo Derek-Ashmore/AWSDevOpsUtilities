@@ -8,7 +8,7 @@ Environment Settings:
     --  Key_Id              Id of KMS key to used
     --  Secret_Encrypted    Secret text encrypted and encoded in base 64
 
-Git Repo source:    https://github.com/Derek-Ashmore/AWSDevOpsUtilities/blob/master/samples/kms-secrets/kmsLambda.py
+Source Control: https://github.com/Derek-Ashmore/AWSDevOpsUtilities
 """
 
 import sys

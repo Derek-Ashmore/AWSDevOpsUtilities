@@ -9,7 +9,7 @@ Environment Settings:
 Required Argument fields:
     --  Assumed_Role - ARN of role to assume
 
-Git Repo source:    https://github.com/Derek-Ashmore/AWSDevOpsUtilities/blob/master/samples/cross-account/crossAccount.py
+Source Control: https://github.com/Derek-Ashmore/AWSDevOpsUtilities
 """
 
 import sys

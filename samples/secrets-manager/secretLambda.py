@@ -7,7 +7,7 @@ for needed items like database passwords.
 Environment Settings:
     --  Secret_Name         Secret name to use
 
-Git Repo source:    https://github.com/Derek-Ashmore/AWSDevOpsUtilities/blob/master/samples/secrets-manager/secretLambda.py
+Source Control: https://github.com/Derek-Ashmore/AWSDevOpsUtilities
 """
 
 import sys
