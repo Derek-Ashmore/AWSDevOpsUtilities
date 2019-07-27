@@ -2,7 +2,7 @@
 
 ## Purpose
 This lambda is a simple example of a lambda REST API proxy. This sample was written
-to aid development of Slack commands against other enterprise products
+to aid development of Slack commands against other enterprise products.
 
 ## Installation
 
